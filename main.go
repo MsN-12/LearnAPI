@@ -18,6 +18,14 @@ func main() {
 	checkError(err)
 	defer db.Close()
 
+	result, err := db.Exec("insert into data values(4, 'xyz')")
+	checkError(err)
+	lastInsertId, err := result.LastInsertId()
+	fmt.Println("lansInsertedId: ", lastInsertId)
+	rowsAffected, err := result.RowsAffected()
+	fmt.Println("rowsAffected: ", rowsAffected)
+	checkError(err)
+
 	rows, err := db.Query("SELECT * from data")
 	checkError(err)
 	for rows.Next() {
