@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -22,12 +23,31 @@ func (app *App) Initialise() error {
 		return err
 	}
 	app.Router = mux.NewRouter().StrictSlash(true)
+	app.handleRoutes()
 	return nil
 }
 func (app *App) Run(address string) {
 	log.Fatal(http.ListenAndServe(address, app.Router))
 }
 func (app *App) handleRoutes() {
-	/*	app.Router.HandleFunc("/products", getProducts).Methods("GET")
-	 */
+	app.Router.HandleFunc("/products", app.getProducts).Methods("GET")
+
+}
+func sendResponse(w http.ResponseWriter, statusCode int, payload interface{}) {
+	response, _ := json.Marshal(payload)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	w.Write(response)
+}
+func sendError(w http.ResponseWriter, statusCode int, err string) {
+	errorMessage := map[string]string{"error": err}
+	sendResponse(w, statusCode, errorMessage)
+}
+func (app *App) getProducts(w http.ResponseWriter, r *http.Request) {
+	products, err := getProducts(app.DB)
+	if err != nil {
+		sendError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	sendResponse(w, http.StatusOK, products)
 }
