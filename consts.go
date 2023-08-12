@@ -1,7 +1,7 @@
 package main
 
 const (
-	DBName     = "learning"
+	DBName     = "inventory"
 	DBUser     = "root"
 	DBPassword = "secret"
 )
