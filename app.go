@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type App struct {
@@ -31,6 +32,7 @@ func (app *App) Run(address string) {
 }
 func (app *App) handleRoutes() {
 	app.Router.HandleFunc("/products", app.getProducts).Methods("GET")
+	app.Router.HandleFunc("/products/{id}", app.getProduct).Methods("GET")
 
 }
 func sendResponse(w http.ResponseWriter, statusCode int, payload interface{}) {
@@ -50,4 +52,21 @@ func (app *App) getProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sendResponse(w, http.StatusOK, products)
+}
+func (app *App) getProduct(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		sendError(w, http.StatusBadRequest, "invalid product ID")
+		return
+	}
+	p := Product{ID: key}
+	err = p.getProduct(app.DB)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			sendError(w, http.StatusNotFound, "Product not found")
+		}
+		sendError(w, http.StatusInternalServerError, err.Error())
+	}
+	sendResponse(w, http.StatusOK, p)
 }
