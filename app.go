@@ -33,6 +33,7 @@ func (app *App) Run(address string) {
 func (app *App) handleRoutes() {
 	app.Router.HandleFunc("/products", app.getProducts).Methods("GET")
 	app.Router.HandleFunc("/products/{id}", app.getProduct).Methods("GET")
+	app.Router.HandleFunc("/product", app.createProduct).Methods("POST")
 
 }
 func sendResponse(w http.ResponseWriter, statusCode int, payload interface{}) {
@@ -67,6 +68,20 @@ func (app *App) getProduct(w http.ResponseWriter, r *http.Request) {
 			sendError(w, http.StatusNotFound, "Product not found")
 		}
 		sendError(w, http.StatusInternalServerError, err.Error())
+	}
+	sendResponse(w, http.StatusOK, p)
+}
+func (app *App) createProduct(w http.ResponseWriter, r *http.Request) {
+	var p Product
+	err := json.NewDecoder(r.Body).Decode(&p)
+	if err != nil {
+		sendError(w, http.StatusBadRequest, "invalid request payload")
+		return
+	}
+	err = p.createProduct(app.DB)
+	if err != nil {
+		sendError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 	sendResponse(w, http.StatusOK, p)
 }

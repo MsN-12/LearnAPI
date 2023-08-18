@@ -38,3 +38,16 @@ func (p *Product) getProduct(db *sql.DB) error {
 	}
 	return nil
 }
+func (p *Product) createProduct(db *sql.DB) error {
+	query := fmt.Sprintf("insert into products(name, quantity, price) values('%v', %v, %v)", p.ID, p.Quantity, p.Price)
+	result, err := db.Exec(query)
+	if err != nil {
+		return err
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+	p.ID = int(id)
+	return nil
+}
