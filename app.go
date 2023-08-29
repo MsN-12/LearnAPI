@@ -33,5 +33,6 @@ func (app *App) handleRoutes() {
 	app.Router.HandleFunc("/products/{id}", app.getProduct).Methods("GET")
 	app.Router.HandleFunc("/products/{id}", app.updateProduct).Methods("PUT")
 	app.Router.HandleFunc("/product", app.createProduct).Methods("POST")
+	app.Router.HandleFunc("/product/{id}", app.createProduct).Methods("DELETE")
 
 }

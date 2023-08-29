@@ -30,6 +30,7 @@ func getProducts(db *sql.DB) ([]Product, error) {
 	}
 	return products, nil
 }
+
 func (p *Product) getProduct(db *sql.DB) error {
 	query := fmt.Sprintf("SELECT name, quantity, price, product From Products where id=%v", p.ID)
 	row := db.QueryRow(query)
@@ -39,6 +40,7 @@ func (p *Product) getProduct(db *sql.DB) error {
 	}
 	return nil
 }
+
 func (p *Product) createProduct(db *sql.DB) error {
 	query := fmt.Sprintf("insert into products(name, quantity, price) values('%v', %v, %v)", p.ID, p.Quantity, p.Price)
 	result, err := db.Exec(query)
@@ -52,6 +54,7 @@ func (p *Product) createProduct(db *sql.DB) error {
 	p.ID = int(id)
 	return nil
 }
+
 func (p *Product) updateProduct(db *sql.DB) error {
 	query := fmt.Sprintf("update products set name='%v', quantity=%v, price=%v where id=%v", p.Name, p.Quantity, p.Price, p.ID)
 	result, err := db.Exec(query)
@@ -59,5 +62,11 @@ func (p *Product) updateProduct(db *sql.DB) error {
 	if rowsEffected == 0 {
 		return errors.New("no such row exist")
 	}
+	return err
+}
+
+func (p *Product) deleteProduct(db *sql.DB) error {
+	query := fmt.Sprintf("delete from products where id=%v ", p.ID)
+	_, err := db.Exec(query)
 	return err
 }
