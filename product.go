@@ -33,6 +33,7 @@ func (app *App) getProduct(w http.ResponseWriter, r *http.Request) {
 			sendError(w, http.StatusNotFound, "Product not found")
 		}
 		sendError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 	sendResponse(w, http.StatusOK, p)
 }
@@ -50,7 +51,7 @@ func (app *App) createProduct(w http.ResponseWriter, r *http.Request) {
 		sendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	sendResponse(w, http.StatusOK, p)
+	sendResponse(w, http.StatusCreated, p)
 }
 
 // Update One Product

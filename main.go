@@ -2,6 +2,9 @@ package main
 
 func main() {
 	app := App{}
-	app.Initialise()
-	app.Run("localhost:20201")
+	err := app.Initialise(DBUser, DBPassword, DBName)
+	if err != nil {
+		return
+	}
+	app.Run("localhost:1234")
 }
