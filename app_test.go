@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -26,6 +28,24 @@ func TestGetProduct(t *testing.T) {
 	checkStatusCode(t, http.StatusOK, rsp.Code)
 
 }
+func TestCreateProduct(t *testing.T) {
+	clearTable()
+	var product = []byte(`{"name": "chair", "quantity":1, "price":100}`)
+	req, _ := http.NewRequest("POST", "/product", bytes.NewBuffer(product))
+	req.Header.Set("Content-Type", "application/json")
+	rsp := sendRequest(req)
+	checkStatusCode(t, http.StatusCreated, rsp.Code)
+
+	var m map[string]interface{}
+	json.Unmarshal(rsp.Body.Bytes(), &m)
+	if m["name"] != "chair" {
+		t.Errorf("Expected name : %v, Got: %v", "chair", m["name"])
+	}
+	if m["quantity"] != 1.0 {
+		t.Errorf("Expected quantity : %v, Got: %v", 1, m["quantity"])
+	}
+}
+
 func createTable() {
 	createTableQuery := `CREATE TABLE IF NOT EXISTS products(
     id int not null AUTO_INCREMENT,
