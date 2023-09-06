@@ -25,9 +25,11 @@ func (app *App) Initialise(DBUser string, DBPassword string, DBName string) erro
 	app.handleRoutes()
 	return nil
 }
+
 func (app *App) Run(address string) {
 	log.Fatal(http.ListenAndServe(address, app.Router))
 }
+
 func (app *App) handleRoutes() {
 	app.Router.HandleFunc("/products", app.getProducts).Methods("GET")
 	app.Router.HandleFunc("/product/{id}", app.getProduct).Methods("GET")

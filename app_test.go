@@ -20,6 +20,7 @@ func TestMain(m *testing.M) {
 	createTable()
 	m.Run()
 }
+
 func TestGetProduct(t *testing.T) {
 	clearTable()
 	addProduct("keyboard", 110, 500)
@@ -28,6 +29,7 @@ func TestGetProduct(t *testing.T) {
 	checkStatusCode(t, http.StatusOK, rsp.Code)
 
 }
+
 func TestCreateProduct(t *testing.T) {
 	clearTable()
 	var product = []byte(`{"name": "chair", "quantity":1, "price":100}`)
@@ -44,6 +46,23 @@ func TestCreateProduct(t *testing.T) {
 	if m["quantity"] != 1.0 {
 		t.Errorf("Expected quantity : %v, Got: %v", 1, m["quantity"])
 	}
+}
+
+func TestDeleteProduct(t *testing.T) {
+	clearTable()
+	addProduct("testProduct", 10, 100.5)
+	req, _ := http.NewRequest("GET", "/product/1", nil)
+	rsp := sendRequest(req)
+	checkStatusCode(t, http.StatusOK, rsp.Code)
+
+	req, _ = http.NewRequest("DELETE", "/product/1", nil)
+	rsp = sendRequest(req)
+	checkStatusCode(t, http.StatusOK, rsp.Code)
+
+	req, _ = http.NewRequest("GET", "/product/1", nil)
+	rsp = sendRequest(req)
+	checkStatusCode(t, http.StatusNotFound, rsp.Code)
+
 }
 
 func createTable() {
