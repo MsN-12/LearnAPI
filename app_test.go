@@ -65,6 +65,38 @@ func TestDeleteProduct(t *testing.T) {
 
 }
 
+func TestUpdateProduct(t *testing.T) {
+	clearTable()
+	addProduct("testProduct1", 10, 100.5)
+	req, _ := http.NewRequest("GET", "/product/1", nil)
+	rsp := sendRequest(req)
+
+	var oldValue map[string]interface{}
+	json.Unmarshal(rsp.Body.Bytes(), &oldValue)
+
+	var product = []byte(`{"name": "testProduct1", "quantity":1, "price":100}`)
+	req, _ = http.NewRequest("PUT", "/product/1", bytes.NewBuffer(product))
+	req.Header.Set("Content-Type", "application/json")
+	rsp = sendRequest(req)
+
+	var newValue map[string]interface{}
+	json.Unmarshal(rsp.Body.Bytes(), &newValue)
+
+	if oldValue["id"] != newValue["id"] {
+		t.Errorf("Expected id: %v, Got %v", newValue["id"], oldValue["id"])
+	}
+	if oldValue["name"] != newValue["name"] {
+		t.Errorf("Expected id: %v, Got %v", newValue["name"], oldValue["name"])
+	}
+	if oldValue["price"] == newValue["price"] {
+		t.Errorf("Expected id: %v, Got %v", newValue["price"], oldValue["price"])
+	}
+	if oldValue["quantity"] == newValue["quantity"] {
+		t.Errorf("Expected id: %v, Got %v", newValue["quantity"], oldValue["quantity"])
+	}
+
+}
+
 func createTable() {
 	createTableQuery := `CREATE TABLE IF NOT EXISTS products(
     id int not null AUTO_INCREMENT,
