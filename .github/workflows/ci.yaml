@@ -12,7 +12,7 @@ jobs:
         run:
           sudo /etc/init.d/mysql start
           sudo mysql -e 'ALTER USER "${{env.DB_USER}}"@"localhost" IDENTIFIED BY "${{env.DB_PASSWORD}}";' -uroot -proot
-          sudo mysql -e 'CREATE DATABASE ${{DB_NAME}};' -u${{env.DB_USER}} -p${{env.DB_PASSWORD}}
+          sudo mysql -e 'CREATE DATABASE ${{env.DB_NAME}};' -u${{env.DB_USER}} -p${{env.DB_PASSWORD}}
       - name: Checkout Repo Code
         uses: actions/checkout@v2
       - name: Setup Go
